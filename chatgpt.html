@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tumse Behtar – Lyric Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #ffb3c6 0, #3b0212 45%, #050008 100%);
+      color: #ffe9f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+    }
+
+    .back-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255, 115, 168, 0.35), transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(255, 234, 167, 0.25), transparent 55%),
+        radial-gradient(circle at 50% 10%, rgba(255, 0, 102, 0.25), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: 0.9;
+      z-index: 0;
+    }
+
+    .bokeh-dot {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(16px);
+      opacity: 0.5;
+      animation: bokeh 14s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes bokeh {
+      0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.3; }
+      50% { transform: translate3d(40px, -30px, 0) scale(1.3); opacity: 0.6; }
+      100% { transform: translate3d(-40px, 30px, 0) scale(1); opacity: 0.3; }
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -40px;
+      font-size: 18px;
+      animation: floatUp 8s linear forwards;
+      opacity: 0.8;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.7); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-110vh) translateX(-30px) scale(1.4); opacity: 0; }
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      width: min(850px, 100%);
+      padding: 32px 20px 40px;
+    }
+
+    .card {
+      position: relative;
+      border-radius: 32px;
+      padding: 32px 28px 36px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(10, 0, 20, 0.82));
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.9),
+        0 0 40px rgba(255, 0, 102, 0.35);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      overflow: hidden;
+    }
+
+    .card.playing::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 65%);
+      opacity: 1;
+      animation: pulseGlow 5s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.55; }
+    }
+
+    .title {
+      font-size: clamp(1.4rem, 2.3vw, 1.9rem);
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      text-align: center;
+      opacity: 0.75;
+      margin-bottom: 20px;
+    }
+
+    /* FIXED : auto height + animations */
+    #lyrics-box {
+  height: 180px;                     /* FIXED HEIGHT */
+  display: flex;                     /* Center vertically */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 10px;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  letter-spacing: 0.03em;
+  transition: opacity .6s ease, transform .6s ease;
+  overflow: hidden;                  /* No jumping / no extra space */
+}
+
+    .lyrics-glow {
+      text-shadow:
+        0 0 14px rgba(255, 0, 102, 0.7),
+        0 0 40px rgba(255, 255, 255, 0.6);
+    }
+
+    /* NEW cinematic animations */
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(25px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .lyric-appear { animation: appear .65s ease forwards; }
+
+    @keyframes zoom {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .lyric-zoom { animation: zoom .7s ease forwards; }
+
+    @keyframes slide {
+      from { opacity: 0; transform: translateY(-25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .lyric-slide { animation: slide .7s ease forwards; }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    #start-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: radial-gradient(circle at top left, #ff6fa3, #ff0055);
+      color: white;
+      box-shadow: 0 11px 35px rgba(0, 0, 0, 0.75);
+      transition: .2s ease;
+    }
+    #start-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.95);
+    }
+
+    .hint, .dedication {
+      text-align: center;
+      opacity: 0.7;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="back-glow"></div>
+
+  <div class="bokeh-dot" style="width:120px;height:120px;left:5%;top:70%;background:#ff7ba5;"></div>
+  <div class="bokeh-dot" style="width:160px;height:160px;right:2%;top:10%;background:#ffa6ff;animation-delay:1.2s;"></div>
+  <div class="bokeh-dot" style="width:190px;height:190px;left:55%;bottom:-5%;background:#ffde8f;animation-delay:2.4s;"></div>
+
+  <main>
+    <div class="card" id="card">
+      <div class="title">TUMSE BEHTAR</div>
+      <div class="subtitle">A tiny romantic website made just for you ✨</div>
+
+      <div id="lyrics-box">
+        <span style="opacity:0.7;">Tap “Start Experience” to begin the magic…</span>
+      </div>
+
+      <div class="controls">
+        <button id="start-btn">START EXPERIENCE</button>
+      </div>
+
+      <div class="hint">Make sure your volume is on 🔊</div>
+      <div class="dedication">Dedicated to the one jiske bina sab kuchh adhoora lagta hai 💗</div>
+    </div>
+  </main>
+
+  <audio id="song" src="audio.mp3"></audio>
+
+  <script>
+  const song = document.getElementById("song");
+  const startBtn = document.getElementById("start-btn");
+  const lyricsBox = document.getElementById("lyrics-box");
+  const card = document.getElementById("card");
+
+  const lyrics = [
+  { time: 6, text: "Ra-ra-ra, ra-ra-ra" },
+  { time: 11, text: "Ra-ra-ra, ra-ra, ra-ra-ra-ra" },
+
+  { time: 19.21, text: "Tumhara mera milna likha toh hoga kaheen" },
+  { time: 28.27, text: "Naseebon ka sitaara mila toh hoga kaheen" },
+
+  { time: 31.77, text: "Na jaane kyun, ae humnasheen" },
+  { time: 35.00, text: "Hai mere dil ko yeh yaqeen" },
+  { time: 38.03, text: "Ki tum sang ho toh bigdi baatein saari ban jaayengi" },
+
+  { time: 45.05, text: "Tum jo hans do, roothi raatein saari mann jaayengi" },
+  { time: 51.70, text: "Tumse behtar, tumse pyaara, yaara, koi nahi" },
+  { time: 58.08, text: "Aasmaan pe tumse roshan taara koi nahi" },
+
+  { time: 64.83, text: "Tumse behtar, tumse pyaara, yaara, koi nahi" },
+  { time: 71.76, text: "Aasmaan pe tumse roshan taara koi nahi" },
+
+  { time: 82.43, text: "Tumse behtar, tumse pyaara, yaara, koi nahi" }
+];
+
+
+  let index = 0;
+  let animationRunning = false;
+
+  function playTypingWithPopup(text) {
+    lyricsBox.className = "";
+    lyricsBox.innerHTML = "";
+
+    // POP EFFECT
+    lyricsBox.style.transform = "scale(0.85)";
+    lyricsBox.style.opacity = "0";
+    setTimeout(() => {
+      lyricsBox.style.transition = "transform 0.45s cubic-bezier(.175,.885,.32,1.275), opacity .45s ease";
+      lyricsBox.style.transform = "scale(1)";
+      lyricsBox.style.opacity = "1";
+    }, 30);
+
+    // TYPEWRITER EFFECT
+    let i = 0;
+    function type() {
+      if (i < text.length) {
+        lyricsBox.innerHTML = text.slice(0, i).replace(/\n/g, "<br/>");
+        i++;
+        setTimeout(type, 32); // typing speed
+      }
+    }
+    setTimeout(type, 90);
+
+    lyricsBox.classList.add("lyrics-glow");
+  }
+
+  function updateLyrics() {
+    if (index < lyrics.length && song.currentTime >= lyrics[index].time) {
+      playTypingWithPopup(lyrics[index].text);
+      index++;
+    }
+    requestAnimationFrame(updateLyrics);
+  }
+
+  // hearts generator
+  function spawnHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "❤";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = 14 + Math.random() * 14 + "px";
+    heart.style.animationDuration = 6 + Math.random() * 4 + "s";
+    heart.style.opacity = 0.3 + Math.random() * 0.6;
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 10000);
+  }
+  setInterval(spawnHeart, 750);
+
+  startBtn.addEventListener("click", async () => {
+    if (animationRunning) return;
+    animationRunning = true;
+    startBtn.disabled = true;
+    card.classList.add("playing");
+
+    try { await song.play(); } catch (e) {}
+    requestAnimationFrame(updateLyrics);
+  });
+
+  // find last lyrics time
+const lastLyricsTime = lyrics[lyrics.length - 1].time;
+
+// check on every frame
+function stopSongAfterEnd() {
+  if (song.currentTime >= lastLyricsTime + 15) {  // 10 sec after last lyric
+    song.pause();
+    song.currentTime = 0;   // reset audio to start
+    return;                 // stop checking
+  }
+  requestAnimationFrame(stopSongAfterEnd);
+}
+
+</script>
+
+</body>
+</html>
